@@ -17,10 +17,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "@": ["src"],
-      "@lib": ["src/lib"],
+      "@": ["src/"],
+      "@lib/*": ["src/lib/*"],
+      "@api": ["src/lib/api"],
+      "@component/*": ["src/lib/component/*"],
+      "@bridge": ["src/lib/bridge"],
+      "@message": ["src/lib/message"],
+      "@message/*": ["src/lib/message/*"],
+      "@polyfill": ["src/lib/polyfill"],
+      "@storage": ["src/lib/storage"]
     }
   },
   "include": ["src"],

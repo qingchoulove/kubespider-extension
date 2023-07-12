@@ -25,7 +25,7 @@ function SuccessAlert({ title, content }: Props) {
         </div>
         <div>
           <p className="font-bold">{title}</p>
-          <p className="text-sm break-words">{content}</p>
+          <p className="text-sm break-all">{content}</p>
         </div>
       </div>
     </div>
@@ -44,7 +44,7 @@ function ErrorAlert({ title, content }: Props) {
         </div>
         <div>
           <p className="font-bold">{title}</p>
-          <p className="text-sm break-words">{content}</p>
+          <p className="text-sm break-all">{content}</p>
         </div>
       </div>
     </div>

@@ -1,8 +1,9 @@
-import { Nav } from "../lib/component/Nav";
-import type { NavItemProps } from "../lib/component/Nav";
+import { useState } from "react";
+import { Nav, NavItemProps } from "@component/Nav";
 import Download from "./Download";
 import Config from "./Config";
-import { useState } from "react";
+import Refresh from "./Refresh";
+import GitHub from "./Github";
 
 const items: NavItemProps[] = [
   {
@@ -36,6 +37,14 @@ const router: RouterItemProps[] = [
   {
     key: "2",
     children: <Config />,
+  },
+  {
+    key: "3",
+    children: <Refresh />,
+  },
+  {
+    key: "4",
+    children: <GitHub />,
   },
 ];
 

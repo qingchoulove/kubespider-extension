@@ -32,14 +32,20 @@ function Input({
   );
 }
 
+interface ButtonProps {
+  label: string;
+  type?: "primary" | "error";
+  loading: boolean;
+}
+
 function Button({
   label,
-  type = "normal",
+  type = "primary",
   loading = false,
   onClick,
 }: {
   label: string;
-  type?: "normal" | "error";
+  type?: "primary" | "error";
   loading?: boolean;
   onClick: () => void;
 }) {
@@ -50,7 +56,7 @@ function Button({
   const className = classnames([
     "px-4 py-2 text-white rounded-md text-sm font-medium active:ring-4",
     {
-      "bg-blue-500 hover:bg-blue-700 active:ring-blue-300": type === "normal",
+      "bg-blue-500 hover:bg-blue-700 active:ring-blue-300": type === "primary",
       "bg-red-500 hover:bg-red-700 active:ring-red-300": type === "error",
     },
   ]);
@@ -109,3 +115,4 @@ function Switch({
 }
 
 export { Input, Button, Switch };
+export type { ButtonProps };

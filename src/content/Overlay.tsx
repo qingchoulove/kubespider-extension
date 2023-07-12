@@ -1,7 +1,7 @@
-import { MessageType, Reply, SuccessReply, consumer } from "../lib/message";
-import { Alert, AlertType } from "../lib/component/Alert";
+import { MessageType, Reply, SuccessReply, consumer } from "@message";
+import { Alert, AlertType } from "@component/Alert";
 import { useEffect, useState } from "react";
-import { useEvent } from "../lib/polyfill";
+import { useEvent } from "@polyfill";
 import { uuidv4 } from "../util";
 
 interface MessageData {

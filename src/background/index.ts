@@ -5,10 +5,11 @@ import {
   Reply,
   SuccessReply,
   ErrorReply,
-} from "../lib/message";
-import Notification from "../lib/message/notification";
-import { api, downloadRequest } from "../lib/api";
-import Storage from "../lib/storage";
+} from "@message";
+import Notification from "@message/notification";
+import { api, downloadRequest } from "@api";
+import Storage from "@storage";
+import { Tab } from "@bridge";
 import Browser from "webextension-polyfill";
 
 /**
@@ -27,13 +28,10 @@ Browser.runtime.onInstalled.addListener(() => {
  */
 Browser.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "KubespiderMenu") {
-    const tabId = tab?.id;
-    if (!tabId) {
-      return;
-    }
+    const tabId = tab?.id || (await Tab.getCurrentTabId());
     let dataSource = info.linkUrl;
     if (dataSource === "" || dataSource == null) {
-      dataSource = tab.url;
+      dataSource = tab?.url;
     }
     if (dataSource === "" || dataSource == null) {
       return;
@@ -41,7 +39,7 @@ Browser.contextMenus.onClicked.addListener(async (info, tab) => {
     const { server } = await Storage.read();
     if (!server || server === "") {
       Notification.error(
-        await getTabId(),
+        tabId,
         "Kubespider",
         "Please set server address first"
       );
@@ -50,12 +48,12 @@ Browser.contextMenus.onClicked.addListener(async (info, tab) => {
     const response = await api(downloadRequest(server, dataSource));
     if (response.status === 200) {
       Notification.success(
-        await getTabId(),
+        tabId,
         "Kubespider",
         `${dataSource} download success`
       );
     } else {
-      Notification.error(await getTabId(), "Kubespider", `${response.body}}`);
+      Notification.error(tabId, "Kubespider", `${response.body}}`);
     }
   }
 });
@@ -73,44 +71,29 @@ consumer.addListener(MessageType.Download, async (payload): Promise<Reply> => {
   if (!server || server === "") {
     return ErrorReply("Please set server address first");
   }
+  const tabId = await Tab.getCurrentTabId();
   const response = await api(
     downloadRequest(server, dataSource, path || "", cookie)
   );
   if (response.status === 200) {
-    Notification.success(
-      await getTabId(),
-      "Kubespider",
-      `${dataSource} download success`
-    );
+    Notification.success(tabId, "Kubespider", `${dataSource} download success`);
     return SuccessReply();
   } else {
-    Notification.error(await getTabId(), "Kubespider", `${response.body}`);
+    Notification.error(tabId, "Kubespider", `${response.body}`);
     return ErrorReply();
   }
 });
 
 // ========== listen to messages from content&popup ==========
-async function getTabId(): Promise<number> {
-  const [tab] = await Browser.tabs.query({ active: true, currentWindow: true });
-  if (!tab) {
-    return -1;
-  }
-  if (!tab.id) {
-    return -1;
-  }
-  return tab.id;
-}
-
 consumer.addListener(
   MessageType.Notification,
   async (payload): Promise<Reply> => {
     // notification resend to content
     let { tabId } = payload as { tabId?: number };
     if (tabId) {
-      console.log("[kubespider] notification receive from content");
       return SuccessReply();
     }
-    tabId = await getTabId();
+    tabId = await Tab.getCurrentTabId();
     if (tabId === -1) {
       return ErrorReply("No active tab");
     }

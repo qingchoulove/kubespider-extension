@@ -1,7 +1,7 @@
 import Browser from "webextension-polyfill";
 
 interface Config {
-  server: string;
+  server?: string;
   path?: string;
   token?: string;
   auth?: boolean;

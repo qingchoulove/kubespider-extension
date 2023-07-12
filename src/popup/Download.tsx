@@ -1,6 +1,14 @@
 import { useState } from "react";
-import { Input, Button } from "../lib/component/Input";
-import { MessageType, sender } from "../lib/message";
+import { Input, Button, ButtonProps } from "@component/Input";
+import { MessageType, sender } from "@message";
+import Storage from "@storage";
+import { componentResult } from "../util";
+
+const defaultBtn: ButtonProps = {
+  label: "Download",
+  type: "primary",
+  loading: false,
+};
 
 function Download() {
   const [form, setForm] = useState({
@@ -8,15 +16,7 @@ function Download() {
     path: "",
   });
   // button state
-  const [btn, setBtn] = useState({
-    label: "Download",
-    type: "normal",
-    loading: false,
-  } as {
-    label: string;
-    type: "normal" | "error";
-    loading: boolean;
-  });
+  const [btn, setBtn] = useState(defaultBtn);
   // update form data
   const handleChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -25,14 +25,22 @@ function Download() {
   const onClick = async () => {
     setBtn((prev) => ({ ...prev, loading: true }));
     if (!form.dataSource || form.dataSource === "") {
-      setBtn((prev) => ({
-        ...prev,
-        type: "error",
-        loading: false,
-        label: "Download Error!",
-      }));
+      componentResult(
+        {
+          label: "No URL!",
+          type: "error",
+          loading: false,
+        },
+        defaultBtn,
+        setBtn
+      );
       return;
     }
+    const { path } = await Storage.read();
+    if (path !== form.path) {
+      Storage.save({ path: form.path });
+    }
+    // send message to background
     const reply = await sender.sendMessage({
       type: MessageType.Download,
       payload: {
@@ -41,14 +49,25 @@ function Download() {
       },
     });
     if (reply.success) {
-      setBtn((prev) => ({ ...prev, loading: false }));
+      componentResult(
+        {
+          label: "Download Success!",
+          type: "primary",
+          loading: false,
+        },
+        defaultBtn,
+        setBtn
+      );
     } else {
-      setBtn((prev) => ({
-        ...prev,
-        type: "error",
-        loading: false,
-        label: "Download Error!",
-      }));
+      componentResult(
+        {
+          label: "Download Error!",
+          type: "error",
+          loading: false,
+        },
+        defaultBtn,
+        setBtn
+      );
     }
   };
 

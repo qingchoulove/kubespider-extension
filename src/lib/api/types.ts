@@ -14,16 +14,21 @@ const downloadRequest = (
   server: string,
   dataSource: string,
   path?: string,
-  cookies?: string
+  cookies?: string,
+  token?: string
 ): Request<{
   dataSource: string;
   path?: string;
   cookies?: string;
 }> => {
+  const headers = new Map<string, string>();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
   return {
     url: `${server}/api/v1/download`,
     method: "POST",
-    headers: new Map(),
+    headers: headers,
     body: {
       dataSource,
       path,
@@ -40,12 +45,15 @@ const healthzRequest = (server: string): Request => {
   };
 };
 
-const refreshRequest = (): Request => {
+const refreshRequest = (server: string, token?: string): Request => {
+  const headers = new Map<string, string>();
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
   return {
-    url: "/api/v1/refresh",
-    method: "POST",
-    headers: new Map(),
-    body: {},
+    url: `${server}/api/v1/refresh`,
+    method: "GET",
+    headers: headers,
   };
 };
 

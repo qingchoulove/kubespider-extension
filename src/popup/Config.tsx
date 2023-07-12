@@ -1,61 +1,73 @@
 import { useEffect, useState } from "react";
-import { Input, Switch, Button } from "../lib/component/Input";
-import Storage from "../lib/storage";
-import { api, healthzRequest } from "../lib/api";
+import { Input, Switch, Button, ButtonProps } from "@component/Input";
+import Storage from "@storage";
+import { api, healthzRequest } from "@api";
+import { componentResult } from "../util";
+
+const defaultBtn: ButtonProps = {
+  label: "Save",
+  type: "primary",
+  loading: false,
+};
 
 function Config() {
+  // form state
   const [form, setForm] = useState({
     server: "",
     enableAuth: false,
     token: "",
     captureCookies: false,
   });
-
-  const [btn, setBtn] = useState({
-    label: "Save",
-    type: "normal",
-    loading: false,
-  } as {
-    label: string;
-    type: "normal" | "error";
-    loading: boolean;
-  });
-
+  // sumbit button state
+  const [btn, setBtn] = useState(defaultBtn);
+  // load config
   useEffect(() => {
     Storage.read().then((config) => {
       setForm({
-        server: config.server,
+        server: config.server || "",
         enableAuth: config.auth || false,
         token: config.token || "",
         captureCookies: config.captureCookies || false,
       });
     });
   }, []);
-
+  // handle form change
   const handleChange = (key: string, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
-
+  // handle submit
   const handleClick = async () => {
     setBtn((prev) => ({ ...prev, loading: true }));
     const param = healthzRequest(form.server);
     const response = await api(param);
     if (response.status !== 200) {
-      setBtn((prev) => ({
-        ...prev,
-        loading: false,
-        type: "error",
-        label: "Error",
-      }));
+      componentResult(
+        {
+          label: "Save Error!",
+          type: "error",
+          loading: false,
+        },
+        defaultBtn,
+        setBtn
+      );
       return;
     }
-    Storage.save({
+    await Storage.save({
       server: form.server,
       auth: form.enableAuth,
       token: form.token,
       captureCookies: form.captureCookies,
     });
-    setBtn((prev) => ({ ...prev, loading: false }));
+
+    componentResult(
+      {
+        label: "Saved",
+        type: "primary",
+        loading: false,
+      },
+      defaultBtn,
+      setBtn
+    );
   };
 
   return (

@@ -8,4 +8,20 @@ function uuidv4(): string {
   );
 }
 
-export { uuidv4 };
+async function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function componentResult<T>(
+  restlt: T,
+  preState: T,
+  setFunction: (value: T) => void,
+  delay?: number
+) {
+  setFunction(restlt);
+  return new Promise((resolve) => setTimeout(resolve, delay || 2000)).then(() =>
+    setFunction(preState)
+  );
+}
+
+export { uuidv4, delay, componentResult };
