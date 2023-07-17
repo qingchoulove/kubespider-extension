@@ -28,17 +28,17 @@ function Alert({ title, content, type = "success", delay = 4500 }: AlertProps) {
 
   return (
     <>
-      {show} && (
-      <div className={classname} role="alert">
-        <div className="flex items-center">
-          <div>{type === "error" ? <Error /> : <Success />}</div>
-          <div>
-            <p className="font-bold">{title}</p>
-            <p className="text-sm break-all">{content}</p>
+      {show && (
+        <div className={classname} role="alert">
+          <div className="flex items-center">
+            <div>{type === "error" ? <Error /> : <Success />}</div>
+            <div>
+              <p className="font-bold">{title}</p>
+              <p className="text-sm break-all">{content}</p>
+            </div>
           </div>
         </div>
-      </div>
-      )
+      )}
     </>
   );
 }
