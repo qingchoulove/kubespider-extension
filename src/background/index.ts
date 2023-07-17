@@ -9,7 +9,7 @@ import {
 import Notification from "@message/notification";
 import { api, downloadRequest } from "@api";
 import Storage from "@storage";
-import { Tab } from "@bridge";
+import { Tab, Cookies } from "@bridge";
 import Browser from "webextension-polyfill";
 
 /**
@@ -36,16 +36,21 @@ Browser.contextMenus.onClicked.addListener(async (info, tab) => {
     if (dataSource === "" || dataSource == null) {
       return;
     }
-    const { server } = await Storage.read();
+    const { server, token, captureCookies } = await Storage.read();
     if (!server || server === "") {
       Notification.error(
         tabId,
         "Kubespider",
-        "Please set server address first"
+        "Please set server address first!"
       );
       return;
     }
-    const response = await api(downloadRequest(server, dataSource));
+    const cookies = captureCookies
+      ? await Cookies.getAll(dataSource)
+      : undefined;
+    const response = await api(
+      downloadRequest(server, dataSource, undefined, cookies, token)
+    );
     if (response.status === 200) {
       Notification.success(
         tabId,
@@ -53,7 +58,7 @@ Browser.contextMenus.onClicked.addListener(async (info, tab) => {
         `${dataSource} download success`
       );
     } else {
-      Notification.error(tabId, "Kubespider", `${response.body}}`);
+      Notification.error(tabId, "Kubespider", `${response.body}`);
     }
   }
 });
@@ -62,18 +67,19 @@ Browser.contextMenus.onClicked.addListener(async (info, tab) => {
  * handle download request
  */
 consumer.addListener(MessageType.Download, async (payload): Promise<Reply> => {
-  const { dataSource, path, cookie } = payload as {
+  const { dataSource, path } = payload as {
     dataSource: string;
     path?: string;
-    cookie?: string;
   };
-  const { server } = await Storage.read();
+  const { server, token, captureCookies } = await Storage.read();
   if (!server || server === "") {
     return ErrorReply("Please set server address first");
   }
   const tabId = await Tab.getCurrentTabId();
+  const cookies = captureCookies ? await Cookies.getAll(dataSource) : undefined;
+
   const response = await api(
-    downloadRequest(server, dataSource, path || "", cookie)
+    downloadRequest(server, dataSource, path, cookies, token)
   );
   if (response.status === 200) {
     Notification.success(tabId, "Kubespider", `${dataSource} download success`);

@@ -22,4 +22,15 @@ namespace Action {
   }
 }
 
-export { Tab, Action };
+namespace Cookies {
+  export async function getAll(url: string): Promise<string> {
+    const cookies = await Browser.cookies.getAll({ url });
+    return cookies
+      .map((cookie) => {
+        return `${cookie.name}=${cookie.value}`;
+      })
+      .join(";");
+  }
+}
+
+export { Tab, Action, Cookies };

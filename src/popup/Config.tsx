@@ -62,7 +62,7 @@ function Config() {
     componentResult(
       {
         label: "Saved",
-        type: "primary",
+        type: "success",
         loading: false,
       },
       defaultBtn,

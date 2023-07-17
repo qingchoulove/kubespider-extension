@@ -17,7 +17,7 @@ function Refresh() {
     // Set loading
     setBtn({ ...btn, loading: true });
 
-    const { server } = await Storage.read();
+    const { server, token } = await Storage.read();
     if (!server || server === "") {
       componentResult(
         {
@@ -30,12 +30,12 @@ function Refresh() {
       );
       return;
     }
-    const response = await api(refreshRequest(server));
+    const response = await api(refreshRequest(server, token));
     if (response.status === 200) {
       componentResult(
         {
           label: "Refresh Success!",
-          type: "primary",
+          type: "success",
           loading: false,
         },
         defaultBtn,

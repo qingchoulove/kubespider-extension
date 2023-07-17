@@ -1,63 +1,24 @@
 import { useEffect, useState } from "react";
 import { Error, Success } from "./Svg";
+import classNames from "classnames";
 
-enum AlertType {
-  Success = "success",
-  Error = "error",
-}
-
-interface Props {
+interface AlertProps {
   title: string;
   content: string;
-  type?: AlertType;
+  type?: "success" | "error";
   delay?: number;
 }
 
-function SuccessAlert({ title, content }: Props) {
-  return (
-    <div
-      className="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md"
-      role="alert"
-    >
-      <div className="flex items-center">
-        <div>
-          <Success />
-        </div>
-        <div>
-          <p className="font-bold">{title}</p>
-          <p className="text-sm break-all">{content}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ErrorAlert({ title, content }: Props) {
-  return (
-    <div
-      className="bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 px-4 py-3 shadow-md"
-      role="alert"
-    >
-      <div className="flex items-center">
-        <div>
-          <Error />
-        </div>
-        <div>
-          <p className="font-bold">{title}</p>
-          <p className="text-sm break-all">{content}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Alert({
-  title,
-  content,
-  type = AlertType.Success,
-  delay = 4500,
-}: Props) {
+function Alert({ title, content, type = "success", delay = 4500 }: AlertProps) {
   const [show, setShow] = useState(true);
+
+  const classname = classNames([
+    "border-t-4 rounded-b px-4 py-3 shadow-md",
+    {
+      "bg-red-100 border-red-500 text-red-900": type === "error",
+      "bg-teal-100 border-teal-500 text-teal-900": type === "success",
+    },
+  ]);
 
   useEffect(() => {
     setInterval(() => {
@@ -67,14 +28,19 @@ function Alert({
 
   return (
     <>
-      {show &&
-        (type === AlertType.Success ? (
-          <SuccessAlert title={title} content={content} />
-        ) : (
-          <ErrorAlert title={title} content={content} />
-        ))}
+      {show} && (
+      <div className={classname} role="alert">
+        <div className="flex items-center">
+          <div>{type === "error" ? <Error /> : <Success />}</div>
+          <div>
+            <p className="font-bold">{title}</p>
+            <p className="text-sm break-all">{content}</p>
+          </div>
+        </div>
+      </div>
+      )
     </>
   );
 }
 
-export { Alert, AlertType };
+export { Alert };

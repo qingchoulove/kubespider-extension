@@ -34,7 +34,7 @@ function Input({
 
 interface ButtonProps {
   label: string;
-  type?: "primary" | "error";
+  type?: "primary" | "success" | "error";
   loading: boolean;
 }
 
@@ -45,7 +45,7 @@ function Button({
   onClick,
 }: {
   label: string;
-  type?: "primary" | "error";
+  type?: "primary" | "success" | "error";
   loading?: boolean;
   onClick: () => void;
 }) {
@@ -58,6 +58,7 @@ function Button({
     {
       "bg-blue-500 hover:bg-blue-700 active:ring-blue-300": type === "primary",
       "bg-red-500 hover:bg-red-700 active:ring-red-300": type === "error",
+      "bg-teal-500 hover:bg-teal-700 active:ring-teal-300": type === "success",
     },
   ]);
 

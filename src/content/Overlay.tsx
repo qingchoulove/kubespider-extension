@@ -1,5 +1,5 @@
 import { MessageType, Reply, SuccessReply, consumer } from "@message";
-import { Alert, AlertType } from "@component/Alert";
+import { Alert } from "@component/Alert";
 import { useEffect, useState } from "react";
 import { useEvent } from "@polyfill";
 import { uuidv4 } from "../util";
@@ -8,7 +8,7 @@ interface MessageData {
   id?: string;
   title: string;
   content: string;
-  type?: string;
+  type?: "success" | "error";
   delay?: number;
 }
 
@@ -39,7 +39,7 @@ function Overlay() {
           key={message.id}
           title={message.title}
           content={message.content}
-          type={message.type as AlertType}
+          type={message.type}
           delay={message.delay}
         />
       ))}

@@ -52,7 +52,7 @@ function Download() {
       componentResult(
         {
           label: "Download Success!",
-          type: "primary",
+          type: "success",
           loading: false,
         },
         defaultBtn,
