@@ -32,6 +32,7 @@ export default defineManifest({
       matches: ["http://*/*", "https://*/*"],
     },
   ],
+  host_permissions: ["*://*/*"],
   permissions: [
     "storage",
     "declarativeNetRequest",

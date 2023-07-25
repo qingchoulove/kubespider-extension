@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input, Button, ButtonProps } from "@component/Input";
 import { MessageType, sender } from "@message";
 import Storage from "@storage";
@@ -15,6 +15,12 @@ function Download() {
     dataSource: "",
     path: "",
   });
+  // load config
+  useEffect(() => {
+    Storage.read().then((config) => {
+      setForm((prev) => ({ ...prev, path: config.path || "" }));
+    });
+  }, []);
   // button state
   const [btn, setBtn] = useState(defaultBtn);
   // update form data
